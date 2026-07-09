@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -32,7 +33,11 @@ func main() {
 		auth.NewModule(pool),
 	}...)
 	for _, module := range modules {
+		fmt.Println("Module Name :::: " + module.Name())
 		module.RegisterRoutes(router)
 	}
+	router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong"))
+	})
 	http.ListenAndServe(":8080", router)
 }

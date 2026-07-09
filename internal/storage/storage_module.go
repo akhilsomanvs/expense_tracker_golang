@@ -62,6 +62,6 @@ func (m *StorageModule) Name() string {
 
 func (m *StorageModule) RegisterRoutes(router chi.Router) {
 	router.Route("/storage", func(r chi.Router) {
-		r.Post("/healthCheck", m.handler.DBHealthCheck)
+		r.Get("/healthCheck", m.handler.DBHealthCheck)
 	})
 }
