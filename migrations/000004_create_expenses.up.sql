@@ -1,0 +1,3 @@
+CREATE TABLE expenses(id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, category_id UUID NOT NULL REFERENCES categories(id), payment_method_id UUID REFERENCES payment_methods(id), amount NUMERIC(12,2) NOT NULL CHECK(amount>=0), description TEXT, expense_date DATE NOT NULL, created_at TIMESTAMP NOT NULL DEFAULT NOW(), updated_at TIMESTAMP NOT NULL DEFAULT NOW());
+CREATE INDEX idx_expenses_user_date ON expenses(user_id, expense_date);
+CREATE INDEX idx_expenses_category ON expenses(category_id);

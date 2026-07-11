@@ -1,0 +1,1 @@
+CREATE TABLE categories(id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name TEXT NOT NULL, icon TEXT, color TEXT, created_by UUID REFERENCES users(id) ON DELETE SET NULL, created_at TIMESTAMP NOT NULL DEFAULT NOW());
