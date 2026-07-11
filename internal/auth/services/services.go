@@ -2,16 +2,12 @@ package services
 
 import (
 	"context"
-	"errors"
 
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/entities"
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/models"
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/repositories"
+	"github.com/akhilsomanvs/expense_tracker/pkg/appErrors"
 	"golang.org/x/crypto/bcrypt"
-)
-
-var (
-	ErrEmailAlreadyExists = errors.New("email already exists")
 )
 
 type Service struct {
@@ -39,7 +35,7 @@ func (s *Service) Register(
 	}
 
 	if existingUser != nil {
-		return nil, ErrEmailAlreadyExists
+		return nil, appErrors.ErrEmailAlreadyExists
 	}
 
 	hash, err := bcrypt.GenerateFromPassword(
