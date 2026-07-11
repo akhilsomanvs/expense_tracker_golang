@@ -14,8 +14,8 @@ type AuthModule struct {
 }
 
 func NewModule(pool *pgxpool.Pool) *AuthModule {
-	repo := repositories.NewRepository()
-	service := services.NewService(repo)
+	repo := repositories.NewPostgressRepository(pool)
+	service := services.New(repo)
 	handler := handlers.NewHandler(service)
 	return &AuthModule{
 		ModuleName: "auth",

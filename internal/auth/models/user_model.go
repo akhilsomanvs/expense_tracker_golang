@@ -3,7 +3,7 @@ package models
 import "time"
 
 type UserModel struct {
-	ID           int
+	ID           string
 	Name         string
 	Email        string
 	PasswordHash string

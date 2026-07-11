@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/entities"
@@ -9,46 +10,63 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	ErrEmailAlreadyExists = errors.New("email already exists")
+)
+
 type Service struct {
-	repo *repositories.Repository
+	repository repositories.UserRepository
 }
 
-func NewService(repo *repositories.Repository) *Service {
-	return &Service{repo: repo}
+func New(repo repositories.UserRepository) *Service {
+	return &Service{
+		repository: repo,
+	}
 }
 
-func (s *Service) Signup(req entities.SignUpRequest) error {
-	hash, err := bcrypt.GenerateFromPassword(
-		[]byte(req.Password),
-		bcrypt.DefaultCost,
+func (s *Service) Register(
+	ctx context.Context,
+	request entities.SignUpRequest,
+) (*entities.SignUpResponse, error) {
+
+	existingUser, err := s.repository.FindByEmail(
+		ctx,
+		request.Email,
 	)
+
 	if err != nil {
-		return errors.New("Could not create Hash")
+		return nil, err
 	}
 
-	userModel := models.UserModel{
-		Name:         req.Name,
-		Email:        req.Email,
+	if existingUser != nil {
+		return nil, ErrEmailAlreadyExists
+	}
+
+	hash, err := bcrypt.GenerateFromPassword(
+		[]byte(request.Password),
+		bcrypt.DefaultCost,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user := &models.UserModel{
+		Name:         request.Name,
+		Email:        request.Email,
 		PasswordHash: string(hash),
 	}
 
-	err = s.repo.CreateUser(userModel)
+	err = s.repository.Create(ctx, user)
+
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
-}
-func (s *Service) Login(req entities.LoginRequest) (string, error) {
-	userModel, err := s.repo.GetUserByEmail(req.Email)
-	if err != nil {
-		return "", errors.New("Invalid Email ID")
-	}
-	err = bcrypt.CompareHashAndPassword(
-		[]byte(userModel.PasswordHash),
-		[]byte(req.Password),
-	)
-	if err != nil {
-		return "", errors.New("Invalid Credentials")
-	}
-	return "token", nil
+
+	return &entities.SignUpResponse{
+		ID:      user.ID,
+		Name:    user.Name,
+		Email:   user.Email,
+		Message: "Registration successful",
+	}, nil
 }
