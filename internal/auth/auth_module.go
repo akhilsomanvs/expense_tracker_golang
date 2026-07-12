@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/handlers"
-	"github.com/akhilsomanvs/expense_tracker/internal/auth/repositories"
+	"github.com/akhilsomanvs/expense_tracker/internal/auth/repositories/postgres"
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -14,7 +14,7 @@ type AuthModule struct {
 }
 
 func NewModule(pool *pgxpool.Pool) *AuthModule {
-	repo := repositories.NewPostgressRepository(pool)
+	repo := postgres.NewPostgressRepository(pool)
 	service := services.New(repo)
 	handler := handlers.NewHandler(service)
 	return &AuthModule{

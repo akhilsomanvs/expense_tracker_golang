@@ -1,9 +1,12 @@
-package repositories
+package postgres
+
+// package repositories
 
 import (
 	"context"
 
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/models"
+	"github.com/akhilsomanvs/expense_tracker/internal/auth/repositories"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -12,7 +15,7 @@ type postgresRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewPostgressRepository(db *pgxpool.Pool) UserRepository {
+func NewPostgressRepository(db *pgxpool.Pool) repositories.UserRepository {
 	return &postgresRepository{
 		db: db,
 	}

@@ -20,10 +20,7 @@ func New(repo repositories.UserRepository) *Service {
 	}
 }
 
-func (s *Service) Register(
-	ctx context.Context,
-	request entities.SignUpRequest,
-) (*entities.SignUpResponse, error) {
+func (s *Service) Register(ctx context.Context, request entities.SignUpRequest) (*entities.SignUpResponse, error) {
 
 	existingUser, err := s.repository.FindByEmail(
 		ctx,
