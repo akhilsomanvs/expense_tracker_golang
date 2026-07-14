@@ -66,9 +66,16 @@ func Conflict[T any](w http.ResponseWriter, message string) {
 	})
 }
 
-func InternalServerError[T any](w http.ResponseWriter) {
+func InternalServerError[T any](w http.ResponseWriter, messages ...string) {
+
+	message := "Internal server error"
+
+	if len(messages) > 0 && messages[0] != "" {
+		message = messages[0]
+	}
+
 	writeJSON(w, http.StatusInternalServerError, APIResponse[T]{
 		Success: false,
-		Message: "Internal server error",
+		Message: message,
 	})
 }

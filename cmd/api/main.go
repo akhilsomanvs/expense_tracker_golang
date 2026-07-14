@@ -9,6 +9,8 @@ import (
 	"github.com/akhilsomanvs/expense_tracker/internal/auth"
 	"github.com/akhilsomanvs/expense_tracker/internal/core"
 	"github.com/akhilsomanvs/expense_tracker/pkg/database"
+	"github.com/akhilsomanvs/expense_tracker/pkg/logger"
+	"github.com/akhilsomanvs/expense_tracker/pkg/middlewares"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -28,7 +30,10 @@ func main() {
 	defer db.Close()
 
 	router := chi.NewRouter()
+	appLogger := logger.New()
+	router.Use(middlewares.Recovery(appLogger))
 
+	//Module registry
 	requiredModules := []core.AppModule{}
 
 	modules := append(requiredModules, []core.AppModule{
@@ -37,6 +42,8 @@ func main() {
 	for _, module := range modules {
 		module.RegisterRoutes(router)
 	}
+
+	//Server
 	router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
 	})
