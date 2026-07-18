@@ -7,16 +7,19 @@ import (
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/models"
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/repositories"
 	"github.com/akhilsomanvs/expense_tracker/pkg/appErrors"
+	"github.com/akhilsomanvs/expense_tracker/pkg/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service struct {
 	repository repositories.UserRepository
+	jwtService *jwt.Service
 }
 
-func New(repo repositories.UserRepository) *Service {
+func New(repo repositories.UserRepository, jwtService *jwt.Service) *Service {
 	return &Service{
 		repository: repo,
+		jwtService: jwtService,
 	}
 }
 

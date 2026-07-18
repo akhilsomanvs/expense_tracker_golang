@@ -4,6 +4,7 @@ import (
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/handlers"
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/repositories/postgres"
 	"github.com/akhilsomanvs/expense_tracker/internal/auth/services"
+	"github.com/akhilsomanvs/expense_tracker/pkg/jwt"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -13,9 +14,9 @@ type AuthModule struct {
 	handler    *handlers.Handler
 }
 
-func NewModule(pool *pgxpool.Pool) *AuthModule {
+func NewModule(pool *pgxpool.Pool, jwtService *jwt.Service) *AuthModule {
 	repo := postgres.NewPostgressRepository(pool)
-	service := services.New(repo)
+	service := services.New(repo, jwtService)
 	handler := handlers.NewHandler(service)
 	return &AuthModule{
 		ModuleName: "auth",

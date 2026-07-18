@@ -48,7 +48,7 @@ func main() {
 	requiredModules := []core.AppModule{}
 
 	modules := append(requiredModules, []core.AppModule{
-		auth.NewModule(db.Pool()),
+		auth.NewModule(db.Pool(), jwtService),
 	}...)
 	for _, module := range modules {
 		module.RegisterRoutes(router)
