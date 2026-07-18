@@ -9,6 +9,7 @@ import (
 	"github.com/akhilsomanvs/expense_tracker/internal/auth"
 	"github.com/akhilsomanvs/expense_tracker/internal/core"
 	"github.com/akhilsomanvs/expense_tracker/pkg/database"
+	"github.com/akhilsomanvs/expense_tracker/pkg/jwt"
 	"github.com/akhilsomanvs/expense_tracker/pkg/logger"
 	"github.com/akhilsomanvs/expense_tracker/pkg/middlewares"
 	"github.com/akhilsomanvs/expense_tracker/pkg/response"
@@ -18,6 +19,11 @@ import (
 func main() {
 
 	config := configs.Load()
+	jwtService := jwt.New(
+		config.JWT.Secret,
+		config.JWT.Issuer,
+		config.JWT.TTL,
+	)
 
 	fmt.Println(config.Database.Host)
 

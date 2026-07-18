@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -29,6 +31,8 @@ type DatabaseConfig struct {
 
 type JWTConfig struct {
 	Secret string
+	Issuer string
+	TTL    time.Duration
 }
 
 func Load() *Config {
@@ -46,8 +50,15 @@ func Load() *Config {
 	serverConfig := ServerConfig{
 		Port: getEnv("SERVER_PORT", "8080"),
 	}
+
+	ttlHours, err := strconv.Atoi(os.Getenv("JWT_TTL_HOURS"))
+	if err != nil {
+		ttlHours = 24
+	}
 	jwtConfig := JWTConfig{
 		Secret: getEnv("JWT_SECRET", ""),
+		Issuer: getEnv("JWT_SECRET", ""),
+		TTL:    time.Duration(ttlHours) * time.Hour,
 	}
 	config := &Config{
 		Database: database,
