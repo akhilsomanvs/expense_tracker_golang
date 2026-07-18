@@ -1,5 +1,7 @@
 package entities
 
 type LoginResponse struct {
-	AccessToken string `json:"access_token"`
+	AccessToken string `json:"accessToken"`
+	TokenType   string `json:"tokenType"`
+	ExpiresIn   int64  `json:"expiresIn"`
 }

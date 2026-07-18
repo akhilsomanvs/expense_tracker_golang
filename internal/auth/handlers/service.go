@@ -8,4 +8,5 @@ import (
 
 type AuthService interface {
 	Register(ctx context.Context, request entities.SignUpRequest) (*entities.SignUpResponse, error)
+	Login(ctx context.Context, request entities.LoginRequest) (*entities.LoginResponse, error)
 }

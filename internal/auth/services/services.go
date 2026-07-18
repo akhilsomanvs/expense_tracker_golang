@@ -13,10 +13,10 @@ import (
 
 type Service struct {
 	repository repositories.UserRepository
-	jwtService *jwt.Service
+	jwtService *jwt.Manager
 }
 
-func New(repo repositories.UserRepository, jwtService *jwt.Service) *Service {
+func New(repo repositories.UserRepository, jwtService *jwt.Manager) *Service {
 	return &Service{
 		repository: repo,
 		jwtService: jwtService,
@@ -25,7 +25,7 @@ func New(repo repositories.UserRepository, jwtService *jwt.Service) *Service {
 
 func (s *Service) Register(ctx context.Context, request entities.SignUpRequest) (*entities.SignUpResponse, error) {
 
-	existingUser, err := s.repository.FindByEmail(
+	existingUser, err := s.repository.GetUserByEmail(
 		ctx,
 		request.Email,
 	)
@@ -64,5 +64,43 @@ func (s *Service) Register(ctx context.Context, request entities.SignUpRequest) 
 		Name:    user.Name,
 		Email:   user.Email,
 		Message: "Registration successful",
+	}, nil
+}
+
+func (s *Service) Login(ctx context.Context, request entities.LoginRequest) (*entities.LoginResponse, error) {
+	user, err := s.repository.GetUserByEmail(ctx, request.Email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, appErrors.ErrInvalidCredentials
+	}
+
+	err = bcrypt.CompareHashAndPassword(
+		[]byte(user.PasswordHash),
+		[]byte(request.Password),
+	)
+
+	if err != nil {
+		return nil, appErrors.ErrInvalidCredentials
+	}
+
+	token, err := s.jwtService.GenerateToken(
+		&jwt.TokenPayload{
+			UserID: user.ID,
+			Email:  user.Email,
+		},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &entities.LoginResponse{
+		AccessToken: token,
+		TokenType:   "Bearer",
+		ExpiresIn:   int64(s.jwtService.TTL().Seconds()),
 	}, nil
 }

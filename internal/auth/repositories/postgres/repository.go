@@ -51,7 +51,7 @@ func (r *postgresRepository) Create(
 	)
 }
 
-func (r *postgresRepository) FindByEmail(
+func (r *postgresRepository) GetUserByEmail(
 	ctx context.Context,
 	email string,
 ) (*models.UserModel, error) {

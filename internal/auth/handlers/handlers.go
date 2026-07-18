@@ -46,4 +46,33 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	response.Created(w, registerResponse)
 }
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {}
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+	var request entities.LoginRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		response.BadRequest(w, "Invalid request body")
+		return
+	}
+
+	if err := validator.Validate(request); err != nil {
+		response.BadRequest(w, err.Error())
+		return
+	}
+
+	loginResponse, err := h.service.Login(r.Context(), request)
+	if err != nil {
+		switch {
+		case errors.Is(err, appErrors.ErrInvalidCredentials):
+			response.Unauthorized[any](w, "Invalid email or password")
+
+		default:
+			response.InternalServerError[any](w)
+		}
+
+		return
+	}
+	response.OK(
+		w,
+		loginResponse,
+	)
+}

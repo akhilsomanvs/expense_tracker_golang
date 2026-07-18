@@ -17,21 +17,21 @@ type TokenPayload struct {
 	Email  string
 }
 
-type Service struct {
+type Manager struct {
 	secret []byte
 	issuer string
 	ttl    time.Duration
 }
 
-func New(secret, issuer string, ttl time.Duration) *Service {
-	return &Service{
+func New(secret, issuer string, ttl time.Duration) *Manager {
+	return &Manager{
 		secret: []byte(secret),
 		issuer: issuer,
 		ttl:    ttl,
 	}
 }
 
-func (s *Service) GenerateToken(tokenPayload *TokenPayload) (string, error) {
+func (s *Manager) GenerateToken(tokenPayload *TokenPayload) (string, error) {
 	now := time.Now()
 
 	claims := Claims{
@@ -53,7 +53,7 @@ func (s *Service) GenerateToken(tokenPayload *TokenPayload) (string, error) {
 	return token.SignedString(s.secret)
 }
 
-func (s *Service) ValidateToken(tokenString string) (*Claims, error) {
+func (s *Manager) ValidateToken(tokenString string) (*Claims, error) {
 	token, err := jwtlib.ParseWithClaims(
 		tokenString,
 		&Claims{},
@@ -73,4 +73,8 @@ func (s *Service) ValidateToken(tokenString string) (*Claims, error) {
 
 	return claims, nil
 
+}
+
+func (s *Manager) TTL() time.Duration {
+	return s.ttl
 }

@@ -14,7 +14,7 @@ type AuthModule struct {
 	handler    *handlers.Handler
 }
 
-func NewModule(pool *pgxpool.Pool, jwtService *jwt.Service) *AuthModule {
+func NewModule(pool *pgxpool.Pool, jwtService *jwt.Manager) *AuthModule {
 	repo := postgres.NewPostgressRepository(pool)
 	service := services.New(repo, jwtService)
 	handler := handlers.NewHandler(service)
